@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список дел</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            margin: 40px; 
+            background-color: #f0f0f0;
+        }
+        h1 { 
+            color: #3366cc;
+        }
+        ul { list-style: none; padding: 0; }
+        li { 
+            margin: 10px 0; 
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+        }
+        .task-date {
+            font-size: 12px;
+            color: #888;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Мои задачи</h1>
+    
+    <ul>
+        {% for task in tasks %}
+            <li>
+                {{ task.text }}
+                <span class="task-date">(создано: {{ task.date }})</span>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Добавить задачу</h2>
+    <form method="POST" action="/add">
+        <input type="text" name="task" placeholder="Новая задача" required>
+        <button type="submit">Добавить</button>
+    </form>
+
+    <form action="/clear" method="POST">
+        <button type="submit">Очистить всё</button>
+    </form>
+</body>
+</html>
