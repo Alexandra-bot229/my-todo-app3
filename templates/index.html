@@ -23,6 +23,14 @@
             color: #888;
             margin-left: 10px;
         }
+        a {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #3366cc;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -33,6 +41,8 @@
             <li>
                 {{ task.text }}
                 <span class="task-date">(создано: {{ task.date }})</span>
+                <a href="/edit/{{ loop.index0 }}"> Редактировать</a>
+                <a href="/delete/{{ loop.index0 }}"> Удалить</a>
             </li>
         {% endfor %}
     </ul>
