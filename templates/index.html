@@ -31,34 +31,91 @@
         a:hover {
             text-decoration: underline;
         }
+        select, input, button {
+            padding: 8px;
+            margin: 5px;
+        }
+        
+        /* Цвета для приоритетов */
+        .priority-high {
+            color: red;
+            font-weight: bold;
+        }
+        .priority-medium {
+            color: orange;
+        }
+        .priority-low {
+            color: green;
+        }
+        
+        .stats {
+            background-color: #e0e0e0;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
     <h1>Мои задачи</h1>
-    <p>📋 Осталось задач: {{ tasks | selectattr('done', 'equalto', False) | list | length }}</p>
+    
+    <div class="stats">
+        <p>
+            <strong>Статистика:</strong><br>
+            📋 Осталось задач: {{ tasks | selectattr('done', 'equalto', False) | list | length }}<br>
+            🔴 Высоких: {{ tasks | selectattr('priority', 'equalto', 'высокий') | list | length }} |
+            🟡 Средних: {{ tasks | selectattr('priority', 'equalto', 'средний') | list | length }} |
+            🟢 Низких: {{ tasks | selectattr('priority', 'equalto', 'низкий') | list | length }}
+        </p>
+    </div>
+    
+    <p>
+        <a href="/">Все задачи</a> |
+        <a href="/by_priority">По приоритету (все)</a> |
+        <a href="/by_priority_active">По приоритету (активные)</a>
+    </p>
+    
     <ul>
-    {% for task in tasks %}
-    <li>
-        {% if task.done %}
-            <s>{{ task.text }}</s>
-        {% else %}
-            {{ task.text }}
-        {% endif %}
-        --- <small>{{ task.date }}</small>
-
-        <a href="/toggle/{{ loop.index0 }}"> Выполнено</a>
-        <a href="/edit/{{ loop.index0 }}"> Редактировать</a>
-        <a href="/delete/{{ loop.index0 }}"> Удалить</a>
-    </li>
-    {% endfor %}
-</ul>
-
+        {% for task in tasks %}
+        <li>
+            {% if task.done %}
+                <s>{{ task.text }}</s>
+            {% else %}
+                {{ task.text }}
+            {% endif %}
+            
+            <!-- Отображение приоритета с цветом -->
+            <span class="
+                {% if task.priority == 'высокий' %}priority-high
+                {% elif task.priority == 'средний' %}priority-medium
+                {% else %}priority-low
+                {% endif %}
+            ">
+                [{{ task.priority }}]
+            </span>
+            
+            --- <small>{{ task.date }}</small>
+            
+            <a href="/toggle/{{ loop.index0 }}">[Выполнено]</a>
+            <a href="/edit/{{ loop.index0 }}">[Редактировать]</a>
+            <a href="/delete/{{ loop.index0 }}">[Удалить]</a>
+        </li>
+        {% endfor %}
+    </ul>
+    
     <h2>Добавить задачу</h2>
     <form method="POST" action="/add">
         <input type="text" name="task" placeholder="Новая задача" required>
+        
+        <select name="priority">
+            <option value="высокий">Высокий</option>
+            <option value="средний" selected>Средний</option>
+            <option value="низкий">Низкий</option>
+        </select>
+        
         <button type="submit">Добавить</button>
     </form>
-
+    
     <form action="/clear" method="POST">
         <button type="submit">Очистить всё</button>
     </form>

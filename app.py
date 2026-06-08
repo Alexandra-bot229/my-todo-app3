@@ -28,11 +28,16 @@ def index():
 
 @app.route('/add', methods=['POST'])
 def add_task():
-    new_task = request.form['task']
+    new_task = request.form.get('task')
+    priority = request.form.get('priority', 'средний')
     if new_task:
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        # ✅ ИЗМЕНЕНО: добавили поле 'done': False
-        tasks.append({'text': new_task, 'date': now, 'done': False})
+        tasks.append({
+            'text': new_task,
+            'date': now,
+            'done': False,
+            'priority': priority
+        })
         save_tasks(tasks)
     return redirect('/')
 
@@ -42,7 +47,6 @@ def clear_all():
     save_tasks(tasks)
     return redirect('/')
 
-# Маршрут для удаления задачи
 @app.route('/delete/<int:task_id>')
 def delete_task(task_id):
     if 0 <= task_id < len(tasks):
@@ -50,47 +54,59 @@ def delete_task(task_id):
         save_tasks(tasks)
     return redirect('/')
 
-# Маршрут для редактирования задачи
-@app.route('/edit/<int:task_id>', methods=['GET', 'POST'])
-def edit_task(task_id):
-    # Проверка: существует ли задача
-    if task_id < 0 or task_id >= len(tasks):
-        return "Задача не найдена", 404
-    
-    # Если GET запрос - показываем форму
-    if request.method == 'GET':
-        return render_template('edit.html', task=tasks[task_id])
-    
-    # Если POST запрос - сохраняем изменения
-    if request.method == 'POST':
-        new_text = request.form.get('task', '').strip()
-        
-        # Проверка на пустое поле
-        if new_text == '':
-            return render_template('edit.html', 
-                                 task=tasks[task_id], 
-                                 message="Текст не может быть пустым!")
-        
-        # Проверка: ничего не изменилось
-        old_text = tasks[task_id]['text']
-        if new_text == old_text:
-            return render_template('edit.html', 
-                                 task=tasks[task_id], 
-                                 message="Ничего не изменено")
-        
-        # Сохраняем изменения
-        tasks[task_id]['text'] = new_text
-        save_tasks(tasks)
-        return redirect('/')
-
-#  НоВЫЙ МАРШРУТ: переключение статуса выполнения задачи
 @app.route('/toggle/<int:task_id>')
 def toggle_task(task_id):
     if 0 <= task_id < len(tasks):
-        # Переключаем done: False → True, True → False
         tasks[task_id]['done'] = not tasks[task_id]['done']
         save_tasks(tasks)
     return redirect('/')
+
+@app.route('/edit/<int:task_id>', methods=['GET', 'POST'])
+def edit_task(task_id):
+    if task_id < 0 or task_id >= len(tasks):
+        return "Задача не найдена", 404
+    
+    task = tasks[task_id]
+    
+    if request.method == 'POST':
+        new_text = request.form.get('task', '').strip()
+        new_priority = request.form.get('priority', 'средний')
+        old_text = task['text']
+        old_priority = task.get('priority', 'средний')
+        
+        if new_text == '':
+            return render_template('edit.html', task=task, message="Ошибка: Текст не может быть пустым!")
+        
+        if new_text == old_text and new_priority == old_priority:
+            return render_template('edit.html', task=task, message="Ничего не изменено")
+        
+        task['text'] = new_text
+        task['priority'] = new_priority
+        save_tasks(tasks)
+        return redirect('/')
+    
+    return render_template('edit.html', task=task)
+
+@app.route('/by_priority')
+def by_priority():
+    priority_order = {'высокий': 3, 'средний': 2, 'низкий': 1}
+    sorted_tasks = sorted(
+        tasks,
+        key=lambda task: priority_order.get(task.get('priority', 'средний'), 2),
+        reverse=True
+    )
+    return render_template('index.html', tasks=sorted_tasks)
+
+@app.route('/by_priority_active')
+def by_priority_active():
+    priority_order = {'высокий': 3, 'средний': 2, 'низкий': 1}
+    active_tasks = [task for task in tasks if not task['done']]
+    sorted_tasks = sorted(
+        active_tasks,
+        key=lambda task: priority_order.get(task.get('priority', 'средний'), 2),
+        reverse=True
+    )
+    return render_template('index.html', tasks=sorted_tasks)
 
 if __name__ == '__main__':
     app.run(debug=True)
