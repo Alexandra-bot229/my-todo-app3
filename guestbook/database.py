@@ -28,3 +28,13 @@ def get_all_messages():
     ).fetchall()
     conn.close()
     return messages
+
+def add_message(name, message):
+    """Добавляет новое сообщение в базу данных"""
+    conn = get_db_connection()
+    conn.execute(
+        'INSERT INTO messages (name, message, created_at) VALUES (?, ?, ?)',
+        (name, message, date.today().strftime('%Y-%m-%d'))
+    )
+    conn.commit()
+    conn.close()
