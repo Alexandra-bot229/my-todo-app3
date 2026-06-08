@@ -31,7 +31,8 @@ def add_task():
     new_task = request.form['task']
     if new_task:
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        tasks.append({'text': new_task, 'date': now})
+        # ✅ ИЗМЕНЕНО: добавили поле 'done': False
+        tasks.append({'text': new_task, 'date': now, 'done': False})
         save_tasks(tasks)
     return redirect('/')
 
@@ -81,6 +82,15 @@ def edit_task(task_id):
         tasks[task_id]['text'] = new_text
         save_tasks(tasks)
         return redirect('/')
+
+#  НоВЫЙ МАРШРУТ: переключение статуса выполнения задачи
+@app.route('/toggle/<int:task_id>')
+def toggle_task(task_id):
+    if 0 <= task_id < len(tasks):
+        # Переключаем done: False → True, True → False
+        tasks[task_id]['done'] = not tasks[task_id]['done']
+        save_tasks(tasks)
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run(debug=True)
