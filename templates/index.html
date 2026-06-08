@@ -54,26 +54,67 @@
             border-radius: 5px;
             margin: 10px 0;
         }
+        
+        .search-form {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #e8e8e8;
+            border-radius: 5px;
+        }
+        
+        .search-form input {
+            width: 250px;
+        }
+        
+        .nav-links {
+            margin: 10px 0;
+            padding: 5px;
+        }
+        
+        .nav-links a {
+            margin: 0 5px;
+        }
     </style>
 </head>
 <body>
     <h1>Мои задачи</h1>
     
+    <!-- Форма поиска -->
+    <div class="search-form">
+        <form action="/search" method="get">
+            <input type="text" name="q" placeholder="Поиск по задачам..." value="{{ search_query or '' }}">
+            <button type="submit">Найти</button>
+            {% if search_query %}
+                <a href="/">[Сбросить]</a>
+            {% endif %}
+        </form>
+    </div>
+    
     <div class="stats">
         <p>
             <strong>Статистика:</strong><br>
-            📋 Осталось задач: {{ tasks | selectattr('done', 'equalto', False) | list | length }}<br>
-            🔴 Высоких: {{ tasks | selectattr('priority', 'equalto', 'высокий') | list | length }} |
-            🟡 Средних: {{ tasks | selectattr('priority', 'equalto', 'средний') | list | length }} |
-            🟢 Низких: {{ tasks | selectattr('priority', 'equalto', 'низкий') | list | length }}
+            Осталось задач: {{ tasks | selectattr('done', 'equalto', False) | list | length }}<br>
+            Высоких: {{ tasks | selectattr('priority', 'equalto', 'высокий') | list | length }} |
+            Средних: {{ tasks | selectattr('priority', 'equalto', 'средний') | list | length }} |
+            Низких: {{ tasks | selectattr('priority', 'equalto', 'низкий') | list | length }}
         </p>
     </div>
     
-    <p>
+    <!-- Ссылки сортировки -->
+    <div class="nav-links">
+        <strong>Сортировка:</strong>
+        <a href="/sort/date">По дате (новые)</a> |
+        <a href="/sort/status">По статусу</a> |
+        <a href="/sort/priority">По приоритету</a> |
+        <a href="/sort/alpha">По алфавиту</a>
+    </div>
+    
+    <div class="nav-links">
+        <strong>Фильтры:</strong>
         <a href="/">Все задачи</a> |
         <a href="/by_priority">По приоритету (все)</a> |
         <a href="/by_priority_active">По приоритету (активные)</a>
-    </p>
+    </div>
     
     <ul>
         {% for task in tasks %}
@@ -102,6 +143,10 @@
         </li>
         {% endfor %}
     </ul>
+    
+    {% if tasks|length == 0 %}
+        <p>Нет задач.</p>
+    {% endif %}
     
     <h2>Добавить задачу</h2>
     <form method="POST" action="/add">
