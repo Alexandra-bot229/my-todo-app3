@@ -8,6 +8,16 @@
     <div class="container">
         <h1>📖 Гостевая книга</h1>
         
+        <!-- Блок авторизации -->
+        <div class="auth-links">
+            {% if logged_in %}
+                Вы вошли как <strong>{{ username }}</strong> |
+                <a href="/logout">Выйти</a>
+            {% else %}
+                <a href="/login">Войти</a> (админ: admin / 123)
+            {% endif %}
+        </div>
+        
         <div class="counter">
             Всего сообщений: {{ total_count }}
         </div>
@@ -25,7 +35,9 @@
             <div class="message {% if msg.created_at == today %}fresh{% endif %}">
                 <strong>👤 {{ msg['name'] }}</strong>
                 <small>📅 {{ msg['created_at'] }}</small>
-                <a href="/delete/{{ msg['id'] }}" class="delete-btn" onclick="return confirm('Удалить сообщение?')">🗑️ Удалить</a>
+                {% if logged_in %}
+                    <a href="/delete/{{ msg['id'] }}" class="delete-btn" onclick="return confirm('Удалить сообщение?')">🗑️ Удалить</a>
+                {% endif %}
                 <p>{{ msg['message'] }}</p>
             </div>
             {% endfor %}

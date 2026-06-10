@@ -10,6 +10,8 @@ def get_db_connection():
 
 def init_db():
     conn = get_db_connection()
+    
+    # Таблица сообщений
     conn.execute('''
         CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,6 +20,22 @@ def init_db():
             created_at DATE NOT NULL
         )
     ''')
+    
+    # Таблица пользователей
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL
+        )
+    ''')
+    
+    # Добавляем администратора, если его ещё нет
+    conn.execute(
+        'INSERT OR IGNORE INTO users (username, password) VALUES (?, ?)',
+        ('admin', '123')
+    )
+    
     conn.commit()
     conn.close()
 
@@ -50,3 +68,13 @@ def get_message_count():
     count = cursor.fetchone()[0]
     conn.close()
     return count
+
+def check_user(username, password):
+    """Проверяет, существует ли пользователь с таким логином и паролем"""
+    conn = get_db_connection()
+    user = conn.execute(
+        'SELECT * FROM users WHERE username = ? AND password = ?',
+        (username, password)
+    ).fetchone()
+    conn.close()
+    return user is not None
