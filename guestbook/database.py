@@ -30,7 +30,6 @@ def get_all_messages():
     return messages
 
 def add_message(name, message):
-    """Добавляет новое сообщение в базу данных"""
     conn = get_db_connection()
     conn.execute(
         'INSERT INTO messages (name, message, created_at) VALUES (?, ?, ?)',
@@ -38,3 +37,16 @@ def add_message(name, message):
     )
     conn.commit()
     conn.close()
+
+def delete_message(message_id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
+    conn.commit()
+    conn.close()
+
+def get_message_count():
+    conn = get_db_connection()
+    cursor = conn.execute('SELECT COUNT(*) FROM messages')
+    count = cursor.fetchone()[0]
+    conn.close()
+    return count

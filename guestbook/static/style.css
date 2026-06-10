@@ -1,3 +1,4 @@
+/* Основные стили для всей страницы */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
@@ -5,6 +6,7 @@ body {
     padding: 20px;
 }
 
+/* Контейнер для центрирования контента */
 .container {
     max-width: 600px;
     margin: 0 auto;
@@ -14,31 +16,45 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Заголовок страницы */
 h1 {
     text-align: center;
     color: #333;
 }
 
+/* Стиль для одного сообщения */
 .message {
     border-bottom: 1px solid #ddd;
     padding: 10px 0;
+    overflow: hidden;
 }
 
+/* Свежие сообщения (сегодняшние) */
+.message.fresh {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding-left: 10px;
+}
+
+/* Имя автора */
 .message strong {
     color: #007bff;
 }
 
+/* Дата сообщения */
 .message small {
     color: gray;
     font-size: 0.8em;
 }
 
+/* Блок с формой добавления сообщения */
 .add-form {
     margin-top: 30px;
     padding-top: 20px;
     border-top: 2px solid #eee;
 }
 
+/* Поля ввода и текстовое поле */
 input, textarea {
     width: 100%;
     padding: 8px;
@@ -48,6 +64,7 @@ input, textarea {
     box-sizing: border-box;
 }
 
+/* Кнопка отправки */
 button {
     background-color: #007bff;
     color: white;
@@ -57,6 +74,43 @@ button {
     cursor: pointer;
 }
 
+/* Эффект при наведении на кнопку */
 button:hover {
     background-color: #0056b3;
+}
+
+/* Кнопка удаления */
+.delete-btn {
+    float: right;
+    color: red;
+    text-decoration: none;
+    font-size: 0.9em;
+    margin-left: 10px;
+}
+
+.delete-btn:hover {
+    color: darkred;
+}
+
+/* Счётчик сообщений */
+.counter {
+    background-color: #e9ecef;
+    padding: 8px;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Ссылки сортировки */
+.sort-links {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.sort-links a {
+    margin: 0 10px;
+    color: #007bff;
+    text-decoration: none;
+}
+.sort-links a:hover {
+    text-decoration: underline;
 }
